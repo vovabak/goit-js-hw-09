@@ -1,8 +1,8 @@
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
+import Notiflix from 'notiflix';
 
-const refs = {
-    datetimePicker: document.querySelector('#datetime-picker'),
+const refs = {    
     startBtn: document.querySelector('[data-start]'),
     days: document.querySelector('[data-days]'),
     hours: document.querySelector('[data-hours]'),
@@ -10,44 +10,87 @@ const refs = {
     seconds: document.querySelector('[data-seconds]'),
 }
 
+let selectedDate = 0;
+let deltaTime = 0;
+let intervalId = null;
+
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(selectedDates) {      
-      const selectedDate = selectedDates[0].getTime();      
-      
-      if (selectedDate < Date.now()) {
-          window.alert("Please choose a date in the future");
-          return;
-      }
-      refs.startBtn.removeAttribute('disabled');     
-  },
-};
+    onClose(selectedDates) {      
+        selectedDate = selectedDates[0].getTime();      
+        deltaTime = selectedDate - Date.now();
 
-document.body.style.backgroundColor = 'tomato';
-refs.startBtn.setAttribute('disabled', true);
+        if (selectedDate < Date.now()) {
+            Notiflix.Notify.warning('Please choose a date in the future',
+                {
+                    timeout: 4000,
+                    position: 'center-top',
+                    distance: '20px',
+                    fontSize: '21px',
+                }         
+            );
+            return;
+        }
+        refs.startBtn.removeAttribute('disabled');      
+        updateInputValue();
+    },
+    onValueUpdate() {
+        clearInterval(intervalId);
+        refs.startBtn.addEventListener('click', onStartBtn);
+    },
+};
 
 flatpickr("#datetime-picker", options);
 
+refs.startBtn.setAttribute('disabled', true);
 refs.startBtn.addEventListener('click', onStartBtn);
 
+
 function onStartBtn() {    
-    const intervalId = setInterval(countDown, 1000)
+    intervalId = setInterval(countDown, 1000);
+    refs.startBtn.removeEventListener('click', onStartBtn);    
 }
 
-function countDown() {
-    const dateToStart = new Date(refs.datetimePicker.value).getTime();
-    let deltaTime = dateToStart - Date.now();
+function countDown() {    
+    deltaTime = selectedDate - Date.now();
 
-    const { days, hours, minutes, seconds } = convertMs(deltaTime);
-        
-    refs.days.textContent = days;    
-    refs.hours.textContent = hours;
-    refs.minutes.textContent = minutes;
-    refs.seconds.textContent = seconds;
+    if (deltaTime < 11000) {
+        refs.seconds.style.backgroundColor = 'tomato';
+        refs.seconds.style.fontWeight = 'bold';
+        refs.seconds.nextElementSibling.style.backgroundColor = 'tomato';
+        refs.seconds.nextElementSibling.style.fontWeight = 'bold';
+    }
+
+    if (deltaTime < 0) {
+        Notiflix.Report.info('Day "D"', 'Your time is out', 'Ok',
+            {
+                titleFontSize: '25px',
+                messageFontSize: '18px',                
+            },
+        );
+        clearInterval(intervalId);
+        return;
+    }
+
+    updateInputValue();
 };
+
+function updateInputValue() {
+    
+    const { days, hours, minutes, seconds } = convertMs(deltaTime);
+
+    refs.days.textContent = addLeadingZero(days);
+    refs.hours.textContent = addLeadingZero(hours);
+    refs.minutes.textContent = addLeadingZero(minutes);
+    refs.seconds.textContent = addLeadingZero(seconds);
+}
+
+function addLeadingZero(value) {
+    return String(value).padStart(2, 0);
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -66,6 +109,4 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
-}
-
-console.log(convertMs(Date.now()));
+};
