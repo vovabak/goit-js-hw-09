@@ -45,10 +45,9 @@ function onSubmit(e) {
             );        
       });
     
-    inputDelay += interval;
-
-    
+    inputDelay += interval;    
   }
+  e.currentTarget.reset();
 }
 
 function createPromise(position, delay) { 
