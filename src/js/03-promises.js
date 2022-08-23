@@ -27,7 +27,7 @@ function onSubmit(e) {
       .then(({ position, delay }) => {
         Notiflix.Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`,
                 {
-                    timeout: inputDelay,
+                    timeout: 10000,
                     position: 'right-top',
                     distance: '20px',
                     fontSize: '21px',
@@ -37,7 +37,7 @@ function onSubmit(e) {
       .catch(({ position, delay }) => {
         Notiflix.Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`,
                 {
-                    timeout: inputDelay,
+                    timeout: 10000,
                     position: 'right-top',
                     distance: '20px',
                     fontSize: '21px',
