@@ -34,34 +34,35 @@ const options = {
             );
             return;
         }
-        refs.startBtn.removeAttribute('disabled');      
+        refs.startBtn.disabled = false;
         updateInputValue();
     },
     onValueUpdate() {
         clearInterval(intervalId);
-        refs.startBtn.addEventListener('click', onStartBtn);
+        
+        if (refs.seconds.classList.contains('js-notify')) {
+            refs.seconds.classList.remove('js-notify');
+            refs.seconds.nextElementSibling.classList.remove('js-notify');
+        }
     },
 };
 
 flatpickr("#datetime-picker", options);
 
-refs.startBtn.setAttribute('disabled', true);
 refs.startBtn.addEventListener('click', onStartBtn);
 
 
 function onStartBtn() {    
     intervalId = setInterval(countDown, 1000);
-    refs.startBtn.removeEventListener('click', onStartBtn);    
+    refs.startBtn.disabled = true;    
 }
 
 function countDown() {    
     deltaTime = selectedDate - Date.now();
 
     if (deltaTime < 11000) {
-        refs.seconds.style.backgroundColor = 'tomato';
-        refs.seconds.style.fontWeight = 'bold';
-        refs.seconds.nextElementSibling.style.backgroundColor = 'tomato';
-        refs.seconds.nextElementSibling.style.fontWeight = 'bold';
+        refs.seconds.classList.add('js-notify');        
+        refs.seconds.nextElementSibling.classList.add('js-notify');
     }
 
     if (deltaTime < 0) {
@@ -70,8 +71,9 @@ function countDown() {
                 titleFontSize: '25px',
                 messageFontSize: '18px',                
             },
-        );
-        clearInterval(intervalId);
+        );     
+        
+        clearInterval(intervalId);        
         return;
     }
 

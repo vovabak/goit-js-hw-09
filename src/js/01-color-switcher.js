@@ -6,19 +6,18 @@ const refs = {
 refs.startBtn.addEventListener('click', onStart);
 refs.stopBtn.addEventListener('click', onStop);
 
-refs.stopBtn.setAttribute('disabled', true);
 let intervalId = null;
 
 function onStart() {
     changeColor();
-    refs.startBtn.setAttribute('disabled', true);
-    refs.stopBtn.removeAttribute('disabled');
+    refs.startBtn.disabled = true;
+    refs.stopBtn.disabled = false;
     intervalId = setInterval(changeColor, 1000);
 }
 
 function onStop() {
-    refs.startBtn.removeAttribute('disabled');
-    refs.stopBtn.setAttribute('disabled', true);
+    refs.startBtn.disabled = false;
+    refs.stopBtn.disabled = true;
     clearInterval(intervalId);
 }
 
