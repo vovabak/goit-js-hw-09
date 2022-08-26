@@ -39,11 +39,6 @@ const options = {
     },
     onValueUpdate() {
         clearInterval(intervalId);
-        
-        if (refs.seconds.classList.contains('js-notify')) {
-            refs.seconds.classList.remove('js-notify');
-            refs.seconds.nextElementSibling.classList.remove('js-notify');
-        }
     },
 };
 
@@ -67,10 +62,14 @@ function countDown() {
 
     if (deltaTime < 0) {
         Notiflix.Report.info('Day "D"', 'Your time is out', 'Ok',
+            () => {
+                refs.seconds.classList.remove('js-notify');
+                refs.seconds.nextElementSibling.classList.remove('js-notify');
+            },
             {
                 titleFontSize: '25px',
                 messageFontSize: '18px',                
-            },
+            },            
         );     
         
         clearInterval(intervalId);        

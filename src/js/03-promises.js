@@ -15,38 +15,34 @@ function onSubmit(e) {
   e.preventDefault();
   const { delay, step, amount } = e.currentTarget.elements;  
 
-  let position = 0;
   let inputDelay = Number(delay.value);
-  const interval = Number(step.value);
+  const interval = Number(step.value);  
   
-  for (let i = 0; i < Number(amount.value); i++) {
-    
-    position += 1;
+  for (let i = 1; i <= Number(amount.value); i++) {
 
-    createPromise(position, inputDelay)
+    createPromise(i, inputDelay)
       .then(({ position, delay }) => {
         Notiflix.Notify.success(`✅ Fulfilled promise ${position} in ${delay}ms`,
-                {
-                    timeout: 10000,
-                    position: 'right-top',
-                    distance: '20px',
-                    fontSize: '21px',
+                {                  
+                  position: 'right-top',
+                  distance: '20px',
+                  fontSize: '21px',
                 }         
-            );
+        );        
       })
       .catch(({ position, delay }) => {
         Notiflix.Notify.failure(`❌ Rejected promise ${position} in ${delay}ms`,
-                {
-                    timeout: 10000,
-                    position: 'right-top',
-                    distance: '20px',
-                    fontSize: '21px',
-                }         
-            );        
+                {                  
+                  position: 'right-top',
+                  distance: '20px',
+                  fontSize: '21px',
+                },
+        );        
       });
     
     inputDelay += interval;    
   }
+
   e.currentTarget.reset();
 }
 
@@ -67,7 +63,3 @@ function createPromise(position, delay) {
     
   });
 }
-
-
-  
-
